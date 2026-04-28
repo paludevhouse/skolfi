@@ -348,7 +348,7 @@ export async function undoStudentExit(
       },
     });
 
-    let restoredCount = 0;
+    const tuitionUpdates: Array<{ id: string; fee: Prisma.Decimal }> = [];
     for (const t of voided) {
       const c = t.classAcademic;
       const fee =
@@ -357,20 +357,26 @@ export async function undoStudentExit(
           : c.paymentFrequency === "QUARTERLY"
             ? c.quarterlyFee
             : c.semesterFee;
-      if (fee == null) {
-        // Class has no configured fee for its frequency — skip restore (data is inconsistent).
-        continue;
-      }
-      await tx.tuition.update({
-        where: { id: t.id },
-        data: {
-          status: "UNPAID",
-          voidedByExit: false,
-          feeAmount: fee,
-        },
-      });
-      restoredCount += 1;
+      if (fee == null) continue; // data inconsistent — skip
+      tuitionUpdates.push({ id: t.id, fee });
     }
+    if (tuitionUpdates.length > 0) {
+      const rows = tuitionUpdates.map((r, i) =>
+        i === 0
+          ? Prisma.sql`(${r.id}::text, ${r.fee}::numeric)`
+          : Prisma.sql`(${r.id}, ${r.fee})`,
+      );
+      await tx.$executeRaw`
+        UPDATE tuitions
+        SET status = 'UNPAID'::"PaymentStatus",
+            voided_by_exit = false,
+            fee_amount = v.fee_amount,
+            updated_at = NOW()
+        FROM (VALUES ${Prisma.join(rows)}) AS v(id, fee_amount)
+        WHERE tuitions.id = v.id
+      `;
+    }
+    const restoredCount = tuitionUpdates.length;
 
     // --- Restore FeeSubscription rows capped at exit date ---
     const exitedAt = student.exitedAt; // snapshot before clearing below
@@ -390,32 +396,51 @@ export async function undoStudentExit(
       },
     });
 
-    let feeBillsRestored = 0;
+    const feeServiceIds = Array.from(
+      new Set(voidedFeeBills.map((b) => b.feeServiceId)),
+    );
+    const allPrices = feeServiceIds.length
+      ? await tx.feeServicePrice.findMany({
+          where: { feeServiceId: { in: feeServiceIds } },
+        })
+      : [];
+    const pricesByService = new Map<string, typeof allPrices>();
+    for (const p of allPrices) {
+      const list = pricesByService.get(p.feeServiceId);
+      if (list) list.push(p);
+      else pricesByService.set(p.feeServiceId, [p]);
+    }
+
+    const feeBillUpdates: Array<{ id: string; amount: Prisma.Decimal }> = [];
     for (const bill of voidedFeeBills) {
-      const prices = await tx.feeServicePrice.findMany({
-        where: { feeServiceId: bill.feeServiceId },
-      });
+      const prices = pricesByService.get(bill.feeServiceId) ?? [];
       let amount: Prisma.Decimal;
       try {
         amount = resolvePriceForPeriod(prices, bill.period, bill.year);
       } catch (err) {
-        if (err instanceof NoPriceForPeriodError) {
-          // Same "data inconsistent — skip" pattern as the tuition branch.
-          continue;
-        }
+        if (err instanceof NoPriceForPeriodError) continue;
         throw err;
       }
-      await tx.feeBill.update({
-        where: { id: bill.id },
-        data: {
-          status: "UNPAID",
-          voidedByExit: false,
-          amount,
-          paidAmount: new Prisma.Decimal(0),
-        },
-      });
-      feeBillsRestored += 1;
+      feeBillUpdates.push({ id: bill.id, amount });
     }
+    if (feeBillUpdates.length > 0) {
+      const rows = feeBillUpdates.map((r, i) =>
+        i === 0
+          ? Prisma.sql`(${r.id}::text, ${r.amount}::numeric)`
+          : Prisma.sql`(${r.id}, ${r.amount})`,
+      );
+      await tx.$executeRaw`
+        UPDATE fee_bills
+        SET status = 'UNPAID'::"PaymentStatus",
+            voided_by_exit = false,
+            amount = v.amount,
+            paid_amount = 0,
+            updated_at = NOW()
+        FROM (VALUES ${Prisma.join(rows)}) AS v(id, amount)
+        WHERE fee_bills.id = v.id
+      `;
+    }
+    const feeBillsRestored = feeBillUpdates.length;
 
     // --- Restore ServiceFeeBill rows voided by this exit ---
     const voidedServiceBills = await tx.serviceFeeBill.findMany({
@@ -428,23 +453,33 @@ export async function undoStudentExit(
       },
     });
 
-    let serviceBillsRestored = 0;
+    const serviceBillUpdates: Array<{ id: string; amount: Prisma.Decimal }> =
+      [];
     for (const bill of voidedServiceBills) {
-      if (!bill.serviceFee || !bill.serviceFee.isActive) {
-        // ServiceFee deleted or inactive — leave voided.
-        continue;
-      }
-      await tx.serviceFeeBill.update({
-        where: { id: bill.id },
-        data: {
-          status: "UNPAID",
-          voidedByExit: false,
-          amount: new Prisma.Decimal(bill.serviceFee.amount),
-          paidAmount: new Prisma.Decimal(0),
-        },
+      if (!bill.serviceFee || !bill.serviceFee.isActive) continue;
+      serviceBillUpdates.push({
+        id: bill.id,
+        amount: new Prisma.Decimal(bill.serviceFee.amount),
       });
-      serviceBillsRestored += 1;
     }
+    if (serviceBillUpdates.length > 0) {
+      const rows = serviceBillUpdates.map((r, i) =>
+        i === 0
+          ? Prisma.sql`(${r.id}::text, ${r.amount}::numeric)`
+          : Prisma.sql`(${r.id}, ${r.amount})`,
+      );
+      await tx.$executeRaw`
+        UPDATE service_fee_bills
+        SET status = 'UNPAID'::"PaymentStatus",
+            voided_by_exit = false,
+            amount = v.amount,
+            paid_amount = 0,
+            updated_at = NOW()
+        FROM (VALUES ${Prisma.join(rows)}) AS v(id, amount)
+        WHERE service_fee_bills.id = v.id
+      `;
+    }
+    const serviceBillsRestored = serviceBillUpdates.length;
 
     await tx.student.update({
       where: { id: student.id },
