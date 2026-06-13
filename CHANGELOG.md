@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.32.2] - 2026-06-13
+
+### Fixes
+- invoice date fixed to 18th, due date to 25th of month
+
+
+
 ## [2.32.1] - 2026-06-13
 
 ### Fixes
