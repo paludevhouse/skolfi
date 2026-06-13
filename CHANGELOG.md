@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.33.2] - 2026-06-13
+
+### Fixes
+- resolve FK violation when assigning/removing students from class
+
+
+
 ## [2.33.1] - 2026-06-13
 
 ### Other
