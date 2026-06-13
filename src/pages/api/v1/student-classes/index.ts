@@ -123,12 +123,13 @@ async function POST(request: NextRequest) {
     );
   }
 
-  // Verify all students exist
+  // Verify all students exist and get their UUIDs
   const students = await prisma.student.findMany({
     where: { nis: { in: studentIdList } },
-    select: { nis: true },
+    select: { id: true, nis: true },
   });
 
+  const nisToId = new Map(students.map((s) => [s.nis, s.id]));
   const existingNis = new Set(students.map((s) => s.nis));
   const missingNis = studentIdList.filter(
     (nis: string) => !existingNis.has(nis),
@@ -142,25 +143,29 @@ async function POST(request: NextRequest) {
     );
   }
 
-  // Check for existing assignments
+  const studentUuids = studentIdList.map((nis: string) => nisToId.get(nis)!);
+
+  // Check for existing assignments using UUIDs
   const existingAssignments = await prisma.studentClass.findMany({
     where: {
       classAcademicId,
-      studentId: { in: studentIdList },
+      studentId: { in: studentUuids },
     },
     select: { studentId: true },
   });
 
-  const alreadyAssigned = new Set(existingAssignments.map((a) => a.studentId));
-  const toAssign = studentIdList.filter(
-    (nis: string) => !alreadyAssigned.has(nis),
+  const alreadyAssignedIds = new Set(
+    existingAssignments.map((a) => a.studentId),
+  );
+  const toAssign = studentUuids.filter(
+    (id: string) => !alreadyAssignedIds.has(id),
   );
 
   if (toAssign.length === 0) {
     return errorResponse(t("api.allStudentsAssigned"), "DUPLICATE_ENTRY", 409);
   }
 
-  // Create assignments
+  // Create assignments using UUIDs
   const created = await prisma.studentClass.createMany({
     data: toAssign.map((studentId: string) => ({
       studentId,
@@ -171,8 +176,10 @@ async function POST(request: NextRequest) {
   return successResponse(
     {
       assigned: created.count,
-      skipped: alreadyAssigned.size,
-      skippedNis: Array.from(alreadyAssigned),
+      skipped: alreadyAssignedIds.size,
+      skippedNis: studentIdList.filter((nis: string) =>
+        alreadyAssignedIds.has(nisToId.get(nis)!),
+      ),
     },
     201,
   );
@@ -189,10 +196,16 @@ async function DELETE(request: NextRequest) {
 
   const { classAcademicId, studentIdList } = parsed.data;
 
+  const students = await prisma.student.findMany({
+    where: { nis: { in: studentIdList } },
+    select: { id: true },
+  });
+  const studentUuids = students.map((s) => s.id);
+
   const deleted = await prisma.studentClass.deleteMany({
     where: {
       classAcademicId,
-      studentId: { in: studentIdList },
+      studentId: { in: studentUuids },
     },
   });
 
