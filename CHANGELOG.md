@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.31.1] - 2026-06-13
+
+### Fixes
+- add script reset db
+- invalidate downstream caches on master data mutations
+
+### Other
+- perf: bulk-update restoreStudent path
+
+
+
 ## [2.31.0] - 2026-04-28
 
 ### Features
