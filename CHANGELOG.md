@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.32.1] - 2026-06-13
+
+### Fixes
+- simplify invoice to single ?month=YYYY-MM param
+
+
+
 ## [2.32.0] - 2026-06-13
 
 ### Features
