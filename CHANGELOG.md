@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.32.0] - 2026-06-13
+
+### Features
+- add dynamic invoice generator for SkolFi client billing
+
+
+
 ## [2.31.1] - 2026-06-13
 
 ### Fixes
