@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.33.0] - 2026-06-13
+
+### Features
+- add USD exchange rate disclaimer to invoice terms
+
+
+
 ## [2.32.2] - 2026-06-13
 
 ### Fixes
