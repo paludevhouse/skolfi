@@ -208,6 +208,9 @@ export function useUpdateDiscount() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.discounts.detail(variables.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
+      });
     },
   });
 }
@@ -248,6 +251,9 @@ export function useBulkDeleteDiscounts() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.discounts.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
+      });
     },
   });
 }
@@ -269,6 +275,9 @@ export function useBulkUpdateDiscounts() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.discounts.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
       });
     },
   });

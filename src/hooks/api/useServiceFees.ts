@@ -94,6 +94,9 @@ export function useCreateServiceFee() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serviceFees.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serviceFeeBills.lists(),
+      });
     },
   });
 }
@@ -126,6 +129,9 @@ export function useUpdateServiceFee() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serviceFees.detail(vars.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serviceFeeBills.lists(),
+      });
     },
   });
 }
@@ -139,6 +145,9 @@ export function useDeleteServiceFee() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serviceFees.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serviceFeeBills.lists(),
       });
     },
   });
@@ -168,6 +177,9 @@ export function useImportServiceFees() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.serviceFees.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.serviceFeeBills.lists(),
       });
     },
   });

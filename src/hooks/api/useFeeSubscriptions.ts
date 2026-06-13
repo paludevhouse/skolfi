@@ -77,6 +77,9 @@ export function useCreateFeeSubscription() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeSubscriptions.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
+      });
     },
   });
 }
@@ -104,6 +107,9 @@ export function useUpdateFeeSubscription() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeSubscriptions.detail(vars.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
+      });
     },
   });
 }
@@ -117,6 +123,9 @@ export function useDeleteFeeSubscription() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeSubscriptions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
       });
     },
   });

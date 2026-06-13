@@ -89,6 +89,12 @@ export function useCreateFeeService() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeServices.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeSubscriptions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
+      });
     },
   });
 }
@@ -116,6 +122,12 @@ export function useUpdateFeeService() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeServices.detail(vars.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeSubscriptions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
+      });
     },
   });
 }
@@ -129,6 +141,12 @@ export function useDeleteFeeService() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeServices.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeSubscriptions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
       });
     },
   });
@@ -158,6 +176,12 @@ export function useImportFeeServices() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.feeServices.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeSubscriptions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeBills.lists(),
       });
     },
   });

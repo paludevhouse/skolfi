@@ -137,6 +137,9 @@ export function useDeleteScholarship() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.scholarships.lists(),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
+      });
     },
   });
 }
@@ -155,6 +158,9 @@ export function useBulkDeleteScholarships() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.scholarships.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
       });
     },
   });
@@ -177,6 +183,9 @@ export function useBulkUpdateScholarships() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.scholarships.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
       });
     },
   });

@@ -119,6 +119,9 @@ export function useUpdateAcademicYear() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.academicYears.detail(variables.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.classAcademics.lists(),
+      });
     },
   });
 }
@@ -133,6 +136,15 @@ export function useDeleteAcademicYear() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.academicYears.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.classAcademics.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.discounts.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.feeServices.lists(),
       });
     },
   });
@@ -151,6 +163,12 @@ export function useSetActiveAcademicYear() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.academicYears.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.academicYears.active(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.classAcademics.lists(),
       });
     },
   });

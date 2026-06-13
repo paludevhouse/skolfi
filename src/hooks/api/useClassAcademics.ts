@@ -126,6 +126,12 @@ export function useUpdateClassAcademic() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.classAcademics.detail(variables.id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.tuitions.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.reports.all,
+      });
     },
   });
 }
