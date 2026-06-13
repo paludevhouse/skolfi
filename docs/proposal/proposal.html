@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Proposal SkolFi — Sistem Manajemen Keuangan Sekolah</title>
+    <style>
+      @page {
+        size: A4;
+        margin: 18mm 16mm;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        color: #1f2937;
+        font-size: 10.5pt;
+        line-height: 1.5;
+      }
+      .page {
+        page-break-after: always;
+      }
+      .page:last-of-type {
+        page-break-after: auto;
+      }
+      header.cover {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 40pt 0 0;
+      }
+      .cover-top .eyebrow {
+        font-size: 10pt;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #2563eb;
+        font-weight: 700;
+      }
+      .cover-top h1 {
+        font-size: 34pt;
+        line-height: 1.1;
+        margin: 14pt 0 6pt;
+        color: #0f172a;
+      }
+      .cover-top .sub {
+        font-size: 13pt;
+        color: #475569;
+        max-width: 460pt;
+      }
+      .cover-mid {
+        border-top: 3pt solid #2563eb;
+        border-bottom: 1pt solid #e2e8f0;
+        padding: 22pt 0;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16pt;
+      }
+      .cover-mid .block .lbl {
+        font-size: 9pt;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+      .cover-mid .block .val {
+        font-size: 12pt;
+        font-weight: 600;
+        color: #0f172a;
+        margin-top: 3pt;
+      }
+      .cover-bottom {
+        font-size: 9pt;
+        color: #64748b;
+      }
+      h2 {
+        font-size: 16pt;
+        color: #0f172a;
+        border-left: 3pt solid #2563eb;
+        padding-left: 10pt;
+        margin: 0 0 10pt;
+      }
+      h3 {
+        font-size: 12pt;
+        color: #0f172a;
+        margin: 14pt 0 4pt;
+      }
+      p {
+        margin: 0 0 8pt;
+      }
+      .muted {
+        color: #64748b;
+      }
+      ul.clean {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      ul.clean li {
+        padding: 5pt 0;
+        border-bottom: 1pt dashed #e2e8f0;
+      }
+      ul.clean li:last-child {
+        border-bottom: 0;
+      }
+      .module-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10pt 16pt;
+        margin-top: 6pt;
+      }
+      .mod {
+        border: 1pt solid #e2e8f0;
+        border-radius: 6pt;
+        padding: 9pt 11pt;
+        page-break-inside: avoid;
+      }
+      .mod h4 {
+        margin: 0 0 4pt;
+        font-size: 11pt;
+        color: #1e3a8a;
+      }
+      .mod .items {
+        font-size: 9.5pt;
+        color: #334155;
+        line-height: 1.45;
+      }
+      .chip {
+        display: inline-block;
+        background: #eff6ff;
+        color: #1e40af;
+        font-size: 8.5pt;
+        padding: 1pt 7pt;
+        border-radius: 999pt;
+        margin: 2pt 3pt 0 0;
+        font-weight: 500;
+      }
+      table.pricing {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 8pt;
+      }
+      table.pricing th,
+      table.pricing td {
+        text-align: left;
+        padding: 9pt 11pt;
+        border-bottom: 1pt solid #e2e8f0;
+        font-size: 10.5pt;
+      }
+      table.pricing thead th {
+        background: #f1f5f9;
+        color: #0f172a;
+        font-size: 9.5pt;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      table.pricing td.num,
+      table.pricing th.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      table.pricing tr.total td {
+        font-weight: 700;
+        font-size: 12pt;
+        background: #1e3a8a;
+        color: #fff;
+        border-bottom: 0;
+      }
+      .callout {
+        background: #f8fafc;
+        border: 1pt solid #e2e8f0;
+        border-left: 3pt solid #2563eb;
+        padding: 10pt 12pt;
+        border-radius: 4pt;
+        margin: 10pt 0;
+        font-size: 10pt;
+      }
+      footer.signoff {
+        margin-top: 28pt;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30pt;
+      }
+      footer.signoff .party .role {
+        font-size: 9pt;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #64748b;
+      }
+      footer.signoff .party .name {
+        margin-top: 42pt;
+        padding-top: 6pt;
+        border-top: 1pt solid #0f172a;
+        font-weight: 600;
+        color: #0f172a;
+      }
+      .section-intro {
+        color: #475569;
+        margin-bottom: 10pt;
+      }
+      .timeline {
+        display: grid;
+        grid-template-columns: 60pt 1fr;
+        row-gap: 6pt;
+        column-gap: 12pt;
+      }
+      .timeline .week {
+        font-weight: 700;
+        color: #2563eb;
+      }
+      .contact-card {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10pt;
+        border: 1pt solid #e2e8f0;
+        border-radius: 6pt;
+        padding: 12pt 14pt;
+      }
+      .contact-card .lbl {
+        font-size: 9pt;
+        color: #64748b;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .contact-card .val {
+        font-size: 11pt;
+        color: #0f172a;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- COVER -->
+    <header class="page cover">
+      <div class="cover-top">
+        <div class="eyebrow">Proposal Penawaran</div>
+        <h1>SkolFi — Sistem Manajemen Keuangan Sekolah</h1>
+        <div class="sub">
+          Platform keuangan sekolah end-to-end: tagihan SPP, pembayaran online,
+          tunggakan, beasiswa, potongan, laporan, dan portal orang tua.
+        </div>
+      </div>
+
+      <div class="cover-mid">
+        <div class="block">
+          <div class="lbl">Disiapkan oleh</div>
+          <div class="val">Ferdy Lim</div>
+          <div class="muted">PIC Pengembangan &amp; Operasional</div>
+        </div>
+        <div class="block">
+          <div class="lbl">Kontak</div>
+          <div class="val">+62 822-6874-3001</div>
+        </div>
+        <div class="block">
+          <div class="lbl">Tanggal</div>
+          <div class="val">18 April 2026</div>
+        </div>
+        <div class="block">
+          <div class="lbl">Versi Produk</div>
+          <div class="val">SkolFi v2.25</div>
+        </div>
+      </div>
+
+      <div class="cover-bottom">
+        Dokumen ini berisi ringkasan modul, rincian biaya pengembangan, dan
+        biaya hosting untuk 2 bulan pertama operasional.
+      </div>
+    </header>
+
+    <!-- RINGKASAN -->
+    <section class="page">
+      <h2>1. Ringkasan Eksekutif</h2>
+      <p class="section-intro">
+        SkolFi adalah sistem keuangan sekolah siap-pakai yang mengelola seluruh
+        siklus penagihan — dari generate tagihan SPP per kelas, pembayaran
+        tunai &amp; online, tunggakan, potongan, beasiswa, hingga laporan
+        pendapatan dan kartu pembayaran. Terdiri dari dua portal: panel Admin
+        untuk staf sekolah &amp; kasir, serta portal Siswa/Orang Tua untuk
+        melihat tagihan dan melakukan pembayaran online.
+      </p>
+
+      <h3>Yang termasuk dalam penawaran ini</h3>
+      <ul class="clean">
+        <li>
+          <strong>Pengembangan sistem lengkap</strong> — seluruh modul yang
+          dirincikan di bagian 2, siap digunakan.
+        </li>
+        <li>
+          <strong>Hosting Railway 2 bulan pertama</strong> — deployment
+          production, database PostgreSQL, dan domain.
+        </li>
+        <li>
+          <strong>Konfigurasi awal &amp; data master</strong> — tahun ajaran,
+          kelas, layanan biaya, akun admin.
+        </li>
+        <li>
+          <strong>Handover &amp; pelatihan singkat</strong> — sesi demo
+          penggunaan untuk admin &amp; kasir.
+        </li>
+      </ul>
+
+      <div class="callout">
+        <strong>Teknologi:</strong> Next.js 14, React 18, PostgreSQL (Prisma
+        ORM), Mantine UI, TanStack Query, JWT auth, deployment Railway.
+        Mendukung multi jenjang sekolah (TK / SD / SMP / SMA) dan dwibahasa
+        (Indonesia / English).
+      </div>
+
+      <h3>Profil Penyedia</h3>
+      <div class="contact-card">
+        <div>
+          <div class="lbl">Nama</div>
+          <div class="val">Ferdy Lim</div>
+        </div>
+        <div>
+          <div class="lbl">Peran</div>
+          <div class="val">Developer &amp; PIC Proyek</div>
+        </div>
+        <div>
+          <div class="lbl">Telepon / WhatsApp</div>
+          <div class="val">082268743001</div>
+        </div>
+        <div>
+          <div class="lbl">Status Produk</div>
+          <div class="val">Production-ready, v2.25</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODULES -->
+    <section class="page">
+      <h2>2. Rincian Modul &amp; Menu</h2>
+      <p class="section-intro">
+        Di bawah ini adalah daftar modul yang tersedia dalam sistem, tersusun
+        sesuai struktur menu aplikasi.
+      </p>
+
+      <div class="module-grid">
+        <div class="mod">
+          <h4>Utama</h4>
+          <div class="items">
+            Dashboard &middot; Pembayaran (tunai) &middot; Tagihan Layanan
+            &middot; Siswa
+          </div>
+          <div>
+            <span class="chip">Ringkasan</span>
+            <span class="chip">Quick Actions</span>
+          </div>
+        </div>
+
+        <div class="mod">
+          <h4>Akademik</h4>
+          <div class="items">
+            Tahun Ajaran &middot; Kelas &middot; Penugasan Siswa ke Kelas
+          </div>
+          <div>
+            <span class="chip">Multi tahun ajaran</span>
+            <span class="chip">TK / SD / SMP / SMA</span>
+          </div>
+        </div>
+
+        <div class="mod">
+          <h4>Keuangan</h4>
+          <div class="items">
+            Tagihan SPP (Tuitions) &middot; Potongan (Discounts) &middot;
+            Beasiswa &middot; Biaya Layanan &middot; Layanan Biaya (Transport,
+            Akomodasi)
+          </div>
+          <div>
+            <span class="chip">Bulk generate</span>
+            <span class="chip">Import Excel</span>
+            <span class="chip">Per-kelas / per-siswa</span>
+          </div>
+        </div>
+
+        <div class="mod">
+          <h4>Laporan</h4>
+          <div class="items">
+            Laporan Tunggakan &middot; Ringkasan Kelas &middot; Ringkasan
+            Layanan &middot; Laporan Transport &middot; Laporan Pendapatan
+            (harian/bulanan/tahunan) &middot; Kartu Pembayaran
+          </div>
+          <div>
+            <span class="chip">Export Excel</span>
+            <span class="chip">Filter NIS + jenjang</span>
+          </div>
+        </div>
+
+        <div class="mod">
+          <h4>Sistem</h4>
+          <div class="items">
+            Karyawan (Admin / Kasir) &middot; Manajemen Akun &middot; Bantuan
+          </div>
+          <div>
+            <span class="chip">RBAC</span>
+            <span class="chip">JWT Auth</span>
+          </div>
+        </div>
+
+        <div class="mod">
+          <h4>Portal Siswa / Orang Tua</h4>
+          <div class="items">
+            Beranda tagihan &middot; Riwayat transaksi &middot; Ganti password
+          </div>
+          <div>
+            <span class="chip">Login via NIS</span>
+            <span class="chip">Mobile-friendly</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Fitur Lintas Modul</h3>
+      <ul class="clean">
+        <li>
+          <strong>Bulk Import Excel</strong> — siswa, potongan, beasiswa,
+          biaya layanan, generate tagihan.
+        </li>
+        <li>
+          <strong>Export Excel</strong> — seluruh laporan keuangan, format
+          rapi, siap cetak/arsip.
+        </li>
+        <li>
+          <strong>Pencarian &amp; Filter</strong> — NIS, nama, jenjang sekolah
+          (TK/SD/SMP/SMA), tahun ajaran, kelas.
+        </li>
+        <li>
+          <strong>Role-Based Access</strong> — peran Admin (penuh) dan Kasir
+          (terbatas pada pembayaran &amp; laporan).
+        </li>
+        <li>
+          <strong>Keamanan</strong> — JWT 8 jam, blacklist token saat logout,
+          rate limiting per endpoint, idempotency.
+        </li>
+        <li>
+          <strong>Dwibahasa</strong> — Indonesia &amp; English via next-intl.
+        </li>
+      </ul>
+    </section>
+
+    <!-- PRICING + TIMELINE + SIGN -->
+    <section class="page">
+      <h2>3. Rincian Biaya</h2>
+      <p class="section-intro">
+        Biaya di bawah ini mencakup pengembangan sistem dan biaya hosting 2
+        bulan pertama. Biaya hosting setelahnya ditagih terpisah sesuai
+        pemakaian Railway.
+      </p>
+
+      <h3>Biaya Awal (One-Time)</h3>
+      <table class="pricing">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Deskripsi</th>
+            <th class="num">Biaya (IDR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pengembangan Sistem</td>
+            <td>
+              Seluruh modul (Utama, Akademik, Keuangan, Laporan, Sistem,
+              Portal Siswa), deployment, konfigurasi awal, handover &amp;
+              pelatihan.
+            </td>
+            <td class="num">Rp&nbsp;4.000.000</td>
+          </tr>
+          <tr>
+            <td>Hosting Railway (2 bulan pertama)</td>
+            <td>
+              Deployment production, database PostgreSQL, bandwidth, dan
+              runtime selama 2 bulan operasional pertama.
+            </td>
+            <td class="num">Rp&nbsp;300.000</td>
+          </tr>
+          <tr class="total">
+            <td colspan="2">Total Biaya Awal</td>
+            <td class="num">Rp&nbsp;4.300.000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="margin-top: 18pt">Biaya Berjalan (Bulanan)</h3>
+      <table class="pricing">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Deskripsi</th>
+            <th class="num">Biaya (IDR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Server &amp; Maintenance</td>
+            <td>
+              Hosting Railway (database + runtime production), monitoring
+              uptime, update rutin, bug fixing, dan support teknis via
+              WhatsApp selama jam kerja.
+            </td>
+            <td class="num">Rp&nbsp;150.000 / bulan</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Catatan:</strong> biaya bulanan mulai ditagihkan pada bulan
+        ke-3 (setelah periode 2 bulan pertama yang sudah termasuk di biaya
+        awal). Penambahan modul / fitur baru di luar daftar akan ditagih
+        terpisah sesuai scope yang disepakati.
+      </div>
+
+      <h2 style="margin-top: 22pt">4. Timeline &amp; Handover</h2>
+      <div class="timeline">
+        <div class="week">Hari 1</div>
+        <div>
+          Pengumpulan data master (kelas, tahun ajaran, layanan biaya, siswa).
+        </div>
+        <div class="week">Hari 2–3</div>
+        <div>
+          Deployment ke Railway, setup domain &amp; environment, input data
+          master, pembuatan akun Admin.
+        </div>
+        <div class="week">Hari 4</div>
+        <div>
+          Sesi demo &amp; pelatihan untuk staf Admin &amp; Kasir (remote /
+          onsite sesuai kebutuhan).
+        </div>
+        <div class="week">Hari 5+</div>
+        <div>Sistem aktif digunakan. Support berjalan via WhatsApp PIC.</div>
+      </div>
+
+      <h2 style="margin-top: 22pt">5. Syarat &amp; Pembayaran</h2>
+      <ul class="clean">
+        <li>
+          Biaya awal (Rp 4.300.000) dibayarkan di muka sebelum handover.
+        </li>
+        <li>
+          Biaya bulanan Rp 150.000 ditagihkan mulai bulan ke-3, dibayar di
+          awal bulan.
+        </li>
+        <li>
+          Transfer ke rekening yang akan diinformasikan oleh PIC via WhatsApp.
+        </li>
+        <li>
+          Penambahan modul baru di luar daftar akan ditagih terpisah sesuai
+          scope yang disepakati.
+        </li>
+      </ul>
+
+      <footer class="signoff">
+        <div class="party">
+          <div class="role">Penyedia</div>
+          <div class="name">Ferdy Lim</div>
+          <div class="muted">Developer &amp; PIC — 082268743001</div>
+        </div>
+        <div class="party">
+          <div class="role">Pelanggan</div>
+          <div class="name">&nbsp;</div>
+          <div class="muted">Nama &amp; Tanda Tangan</div>
+        </div>
+      </footer>
+    </section>
+  </body>
+</html>
