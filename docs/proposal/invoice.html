@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <title>Invoice SkolFi</title>
+    <style>
+      @page { size: A4; margin: 18mm 16mm; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; font-family: "Helvetica Neue", Arial, sans-serif; color: #1f2937; font-size: 11pt; line-height: 1.5; }
+      .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3pt solid #2563eb; padding-bottom: 14pt; margin-bottom: 20pt; }
+      .header .brand { font-size: 22pt; font-weight: 700; color: #0f172a; line-height: 1.1; }
+      .header .brand .tag { display: block; font-size: 10pt; font-weight: 400; color: #64748b; margin-top: 4pt; }
+      .header .inv-meta { text-align: right; }
+      .header .inv-meta .label { font-size: 11pt; letter-spacing: 0.22em; text-transform: uppercase; color: #2563eb; font-weight: 700; }
+      .header .inv-meta .num { font-size: 16pt; font-weight: 700; color: #0f172a; margin-top: 4pt; }
+      .header .inv-meta .date { font-size: 9.5pt; color: #64748b; margin-top: 2pt; }
+      .parties { display: grid; grid-template-columns: 1fr 1fr; gap: 18pt; margin-bottom: 20pt; }
+      .parties .box { border: 1pt solid #e2e8f0; border-radius: 6pt; padding: 12pt 14pt; }
+      .parties .box .role { font-size: 9pt; letter-spacing: 0.18em; text-transform: uppercase; color: #64748b; }
+      .parties .box .name { font-size: 13pt; font-weight: 700; color: #0f172a; margin-top: 4pt; }
+      .parties .box .meta { font-size: 10pt; color: #475569; margin-top: 6pt; line-height: 1.55; }
+      table.items { width: 100%; border-collapse: collapse; }
+      table.items thead th { background: #1e3a8a; color: #fff; padding: 9pt 10pt; text-align: left; font-size: 9.5pt; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+      table.items tbody td { padding: 10pt; border-bottom: 1pt solid #e2e8f0; font-size: 10.5pt; vertical-align: top; }
+      table.items .num { text-align: right; font-variant-numeric: tabular-nums; }
+      table.items .desc .sub { color: #64748b; font-size: 9.5pt; margin-top: 2pt; }
+      .summary { margin-top: 14pt; margin-left: auto; width: 55%; border-collapse: collapse; }
+      .summary td { padding: 7pt 10pt; font-size: 11pt; }
+      .summary tr.total td { background: #1e3a8a; color: #fff; font-weight: 700; font-size: 13pt; }
+      .summary td.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .scope { margin-top: 16pt; background: #f8fafc; border: 1pt solid #e2e8f0; border-left: 3pt solid #2563eb; border-radius: 4pt; padding: 12pt 14pt; }
+      .scope h3 { margin: 0 0 6pt; font-size: 11pt; color: #0f172a; }
+      .scope ul { margin: 0; padding-left: 16pt; font-size: 10pt; color: #334155; }
+      .scope li { padding: 2pt 0; }
+      .pay-info { margin-top: 16pt; background: #f1f5f9; border-radius: 4pt; padding: 12pt 14pt; }
+      .pay-info h3 { margin: 0 0 6pt; font-size: 11pt; color: #0f172a; }
+      .pay-info .row { display: grid; grid-template-columns: 140pt 1fr; row-gap: 4pt; font-size: 10pt; }
+      .pay-info .row .k { color: #64748b; }
+      .pay-info .row .v { color: #0f172a; font-weight: 600; }
+      .terms { margin-top: 16pt; font-size: 9.5pt; color: #475569; line-height: 1.55; }
+      .terms h3 { margin: 0 0 6pt; font-size: 11pt; color: #0f172a; }
+      .terms ul { padding-left: 16pt; margin: 0; }
+      .terms li { padding: 2pt 0; }
+      .signoff { margin-top: 28pt; display: grid; grid-template-columns: 1fr 1fr; gap: 30pt; }
+      .signoff .role { font-size: 9pt; letter-spacing: 0.16em; text-transform: uppercase; color: #64748b; }
+      .signoff .name { margin-top: 50pt; padding-top: 6pt; border-top: 1pt solid #0f172a; font-weight: 600; color: #0f172a; }
+      .signoff .muted { color: #64748b; font-size: 9.5pt; }
+      .footer-note { margin-top: 22pt; text-align: center; color: #64748b; font-size: 9pt; padding-top: 10pt; border-top: 1pt dashed #cbd5e1; }
+    </style>
+  </head>
+  <body>
+    <script>
+      const p = new URLSearchParams(location.search);
+
+      const rawDate = p.get("date") || new Date().toISOString().slice(0, 10);
+      const seq     = p.get("no")   || "001";
+
+      const dateObj = new Date(rawDate + "T00:00:00");
+      const dueObj  = new Date(dateObj.getTime() + 7 * 86400000);
+
+      const fmt = (d) => d.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+      const mm   = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const dd   = String(dateObj.getDate()).padStart(2, "0");
+      const yyyy = dateObj.getFullYear();
+      const invNo = `INV-${yyyy}-${mm}${dd}-${seq}`;
+
+      document.title = `${invNo} — Invoice SkolFi`;
+
+      document.body.innerHTML = `
+        <div class="header">
+          <div class="brand">SkolFi<span class="tag">Sistem Manajemen Keuangan Sekolah</span></div>
+          <div class="inv-meta">
+            <div class="label">Invoice — Biaya Bulanan</div>
+            <div class="num">${invNo}</div>
+            <div class="date">Tanggal: ${fmt(dateObj)}</div>
+            <div class="date">Jatuh tempo: ${fmt(dueObj)}</div>
+          </div>
+        </div>
+
+        <div class="parties">
+          <div class="box">
+            <div class="role">Ditagihkan Oleh</div>
+            <div class="name">Ferdy Lim</div>
+            <div class="meta">Developer &amp; PIC Proyek<br>Telepon / WhatsApp: 082268743001<br>Produk: SkolFi</div>
+          </div>
+          <div class="box">
+            <div class="role">Ditagihkan Kepada</div>
+            <div class="name">Yayasan Pendidikan Ahmad Yani Binjai</div>
+            <div class="meta">
+              Alamat: Jl. Ade Irma Suryani No.38A, Pekan Binjai, Kec. Binjai Kota, Kota Binjai, Sumatera Utara 20711<br>
+              PIC &amp; kontak: Rusdi Gunawan (+62 811-4161-400)
+            </div>
+          </div>
+        </div>
+
+        <table class="items">
+          <thead>
+            <tr>
+              <th style="width:54%">Deskripsi</th>
+              <th class="num" style="width:12%">Qty</th>
+              <th class="num" style="width:17%">Harga Satuan</th>
+              <th class="num" style="width:17%">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="desc">
+                <strong>Biaya Server &amp; Maintenance Bulanan</strong>
+                <div class="sub">Hosting Railway production (database PostgreSQL + runtime), monitoring uptime, update rutin, penanganan bug, dan support teknis online via WhatsApp selama jam kerja.</div>
+              </td>
+              <td class="num">1 bulan</td>
+              <td class="num">Rp&nbsp;175.000</td>
+              <td class="num">Rp&nbsp;175.000</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table class="summary">
+          <tr><td>Subtotal</td><td class="num">Rp&nbsp;175.000</td></tr>
+          <tr><td>PPN</td><td class="num">—</td></tr>
+          <tr class="total"><td>TOTAL</td><td class="num">Rp&nbsp;175.000</td></tr>
+        </table>
+
+        <div class="scope">
+          <h3>Yang Termasuk dalam Biaya Bulanan</h3>
+          <ul>
+            <li>Biaya server Railway (database PostgreSQL + runtime) selama periode tagihan.</li>
+            <li>Monitoring uptime dan restart server jika terjadi gangguan.</li>
+            <li>Update rutin framework, dependency, dan patch keamanan.</li>
+            <li>Bug fixing pada modul yang sudah terpasang, perbaikan diterapkan secara online.</li>
+            <li>Penyesuaian konfigurasi (label, format, aturan kecil) tanpa menambah modul baru.</li>
+            <li>Support via WhatsApp pada jam kerja (Senin–Jumat, 09.00–17.00).</li>
+          </ul>
+        </div>
+
+        <div class="pay-info">
+          <h3>Instruksi Pembayaran</h3>
+          <div class="row">
+            <div class="k">Metode</div><div class="v">Transfer Bank</div>
+            <div class="k">Nama Penerima</div><div class="v">Ferdy Lim</div>
+            <div class="k">Bank / Rekening</div><div class="v">Akan diinformasikan oleh PIC via WhatsApp (082268743001)</div>
+            <div class="k">Berita Transfer</div><div class="v">${invNo} — Yayasan Pendidikan Ahmad Yani Binjai</div>
+          </div>
+        </div>
+
+        <div class="terms">
+          <h3>Ketentuan</h3>
+          <ul>
+            <li>Tagihan bulanan berlaku selama sistem masih aktif digunakan. Pelanggan dapat membatalkan kapan saja dengan pemberitahuan minimum 7 hari sebelum periode tagihan berikutnya.</li>
+            <li>Pembayaran dilakukan di awal bulan, paling lambat pada tanggal jatuh tempo.</li>
+            <li>Keterlambatan pembayaran lebih dari 7 hari dapat mengakibatkan penundaan support atau penghentian sementara server.</li>
+            <li>Pengembangan modul / fitur baru di luar scope maintenance akan ditagihkan pada invoice terpisah sesuai kesepakatan.</li>
+          </ul>
+        </div>
+
+        <div class="signoff">
+          <div>
+            <div class="role">Penyedia</div>
+            <div class="name">Ferdy Lim</div>
+            <div class="muted">082268743001</div>
+          </div>
+          <div>
+            <div class="role">Diterima oleh Pelanggan</div>
+            <div class="name">&nbsp;</div>
+            <div class="muted">Nama jelas &amp; tanda tangan</div>
+          </div>
+        </div>
+
+        <div class="footer-note">Invoice ini dikeluarkan secara elektronik dan sah tanpa tanda tangan basah.</div>
+      `;
+    </script>
+  </body>
+</html>
