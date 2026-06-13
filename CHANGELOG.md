@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.33.1] - 2026-06-13
+
+### Other
+- docs: add SkolFi proposal and invoice documents
+
+
+
 ## [2.33.0] - 2026-06-13
 
 ### Features
